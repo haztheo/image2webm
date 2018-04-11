@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf8">
+<!--        <script type="text/javascript" src="webpjs-0.0.2.min.js"></script>-->
+        <script type="text/javascript" src="libwebp-0.1.3.min.js"></script>
+<!--
+        <script>(function(){var WebP=new Image();WebP.onload=WebP.onerror=function(){
+if(WebP.height!=2){var sc=document.createElement('script');sc.type='text/javascript';sc.async=true;
+var s=document.getElementsByTagName('script')[0];sc.src='webpjs-0.0.2.min.js';s.parentNode.insertBefore(sc,s);}};
+WebP.src='data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';})();</script>
+-->
+        
+        <style>
+            body {text-align: center;}
+            ul {list-style:none;}
+            #drag { border: 10px solid black; text-align: center; padding:20px; width: 500px; margin: auto; display: inline-block;}
+            #einput {width:400px;}
+            #output {margin:20px;}
+
+            #filesinput {
+                visibility: collapse;
+                width: 0px;
+            }
+            #output img{
+                border: 5px solid #333;
+                margin-right: 2px;
+            }
+            #small label {font-size:14px;}
+            #small div {margin:5px 0;}
+            #awesome {display: none}
+            
+            
+            @keyframes donut-spin {
+              0% {
+                transform: rotate(0deg);
+              }
+              100% {
+                transform: rotate(360deg);
+              }
+            }
+            #donut {
+              display: none;
+              border: 4px solid rgba(0, 0, 0, 0.1);
+              border-left-color: #7983ff;
+              border-radius: 50%;
+              width: 30px;
+              height: 30px;
+              animation: donut-spin 1.2s linear infinite;
+              margin-top: 50px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div id="drag">
+            <button id="fbutton">Select Image</button>
+        </div>
+        <input type="file" id="filesinput" accept="image/*">
+        
+        <div style="text-align: center">
+            <div id="donut"></div>
+        </div>
+        
+        <br>
+        <video id="awesome" controls autoplay loop></video>
+        <br>
+
+        <a style="display:none" id="download" download="video.webm">Download WebM</a>
+
+        <canvas id="canvas" style="display:none"></canvas>
+
+
+
+<script src="whammy.js"></script>
+<script>
+
+            /* Drag'n drop stuff */
+            var drag = document.getElementById("drag");
+            var fbutton = document.getElementById("fbutton");
+            var files = document.getElementById("filesinput");
+
+            var ctx = 0;
+
+            var canvas = document.getElementById("canvas");
+            var context = canvas.getContext("2d");
+
+            //image to video via Whammy
+            var video = new Whammy.Video();
+
+            var filesarr = [];
+    
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                  var reader = new FileReader();
+                  reader.onload = function (e) {
+                    var img = new Image;
+                    img.onload = function() {
+                      canvas.width =  img.width;
+                      canvas.height = img.height;
+                      console.log("The width of the image is " + img.width + "px.");
+                      console.log("The height of the image is " + img.height + "px.");
+                      createvideo();
+                    };
+                    img.src = reader.result;
+                  };
+                  reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            function createvideo() {
+                document.getElementById('awesome').src = "";
+                ctx = 0;
+
+                //if we have images loaded
+                if(filesarr.length>0){
+
+                    //loop through them and process
+                    for(i=0; i<filesarr.length; i++) {
+                        var file = filesarr[i];
+                        if(file.type.match(/image.*/)){
+                            process(file);
+                        }
+                    }
+
+                } else {
+                    document.getElementById('status').innerHTML = "Please select some images.";
+                }
+
+            };
+
+
+            fbutton.addEventListener("click", function() {
+                document.getElementById('filesinput').click();
+            }, false);
+
+            drag.ondragover = function(e) {e.preventDefault()}
+            drag.ondrop = function(e) {
+                e.preventDefault();
+                filesarr = e.dataTransfer.items;
+            }
+
+            //process files VIA INPUT
+            files.addEventListener("change", function (e) {
+                filesarr = e.target.files;
+                document.getElementById('donut').style.display = "inline-block";
+                readURL(e.target);
+            }, false);
+
+
+
+            /* main process function */
+            function process(file) {
+
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    var dataUri = event.target.result;
+                    var img = new Image();
+                 
+                    //load image and drop into canvas
+                    img.onload = function() {
+                        
+                        context.globalAlpha = 1;
+                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        video.add(context, 1000);
+                        video.add(context, 1000);
+                        video.add(context, 1000);
+
+//                        //a custom fade in and out slideshow
+//                        context.globalAlpha = 0.2;
+//                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+//                        video.add(context);
+//                        context.clearRect(0,0,context.canvas.width,context.canvas.height);
+//                        context.globalAlpha = 0.4;
+//                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+//                        video.add(context);
+//                        context.clearRect(0,0,context.canvas.width,context.canvas.height);
+//                        context.globalAlpha = 0.6;
+//                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+//                        video.add(context);
+//                        context.clearRect(0,0,context.canvas.width,context.canvas.height);
+//                        context.globalAlpha = 0.8;
+//                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+//                        video.add(context);                       
+//                        context.clearRect(0,0,context.canvas.width,context.canvas.height);
+//                        context.globalAlpha = 1;
+//                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+//
+//                        //this should be a loop based on some user input
+//                        video.add(context);
+//                        video.add(context);
+//                        video.add(context);
+//                        video.add(context);
+//                        video.add(context);
+//                        video.add(context);
+//                        video.add(context);
+//
+//                        context.clearRect(0,0,context.canvas.width,context.canvas.height);
+//                        context.globalAlpha = 0.8;
+//                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+//                        video.add(context);
+//                        context.clearRect(0,0,context.canvas.width,context.canvas.height);
+//                        context.globalAlpha = 0.6;
+//                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+//                        video.add(context);
+//                        context.clearRect(0,0,context.canvas.width,context.canvas.height);
+//                        context.globalAlpha = 0.4;
+//                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+//                        video.add(context);
+                              
+                        ctx++;
+                        finalizeVideo();
+
+                    };
+                    img.src = dataUri;
+                };
+
+                reader.onerror = function(event) {
+                    console.error("File could not be read! Code " + event.target.error.code);
+                };
+
+                reader.readAsDataURL(file);
+
+            }      
+
+
+function finalizeVideo(){
+  //check if its ready
+  if(ctx==filesarr.length){
+      var start_time = +new Date;
+      video.compile(undefined, function(output){
+        console.log("output : ", output);
+        var url = URL.createObjectURL(output);
+        document.getElementById('download').href = url;
+        document.getElementById('donut').style.display = "none";
+        document.getElementById('awesome').style.display = "block";
+        document.getElementById('awesome').src = url;
+        document.getElementById('download').style.display = '';
+      });
+      var end_time = +new Date;
+  }
+
+}
+
+
+</script>
+</body>
+</html>
