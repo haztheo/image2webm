@@ -545,7 +545,7 @@ window.Whammy = (function(){
 
 					//config, you can set all arguments or what you need
 					config = new Object()
-					config.target_size = 0;			// if non-zero, set the desired target size in bytes. Takes precedence over the 'compression' parameter.
+					config.target_size = 3000000;			// if non-zero, set the desired target size in bytes. Takes precedence over the 'compression' parameter.
 					config.target_PSNR = 0.;		// if non-zero, specifies the minimal distortion to	try to achieve. Takes precedence over target_size.
 					config.method = 4;			// quality/speed trade-off (0=fast, 6=slower-better)
 					config.sns_strength = 50;		// Spatial Noise Shaping. 0=off, 100=maximum.

@@ -97,7 +97,7 @@
                         if(h > 1280){
                             var mult = 1280/h;
                             console.log("mult : ", mult);
-                            w = mult*w;
+                            w = Math.floor(mult*w);
                             h = 1280;
                         } 
                       }
@@ -105,7 +105,7 @@
                         if(w > 1280){
                             var mult = 1280/w;
                             console.log("mult : ", mult);
-                            h = h * mult;
+                            h = Math.floor(h * mult);
                             w = 1280;
                         }   
                       }
