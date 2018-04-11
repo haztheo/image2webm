@@ -88,10 +88,31 @@
                   reader.onload = function (e) {
                     var img = new Image;
                     img.onload = function() {
-                      canvas.width =  img.width;
-                      canvas.height = img.height;
-                      console.log("The width of the image is " + img.width + "px.");
-                      console.log("The height of the image is " + img.height + "px.");
+                      var w = img.width;
+                      var h = img.height;
+                      console.log("The width of the image is " + w + "px.");
+                      console.log("The height of the image is " + h + "px.");
+                      var isPortrait = h > w;
+                      if(isPortrait){
+                        if(h > 1280){
+                            var mult = 1280/h;
+                            console.log("mult : ", mult);
+                            w = mult*w;
+                            h = 1280;
+                        } 
+                      }
+                      else{
+                        if(w > 1280){
+                            var mult = 1280/w;
+                            console.log("mult : ", mult);
+                            h = h * mult;
+                            w = 1280;
+                        }   
+                      }
+                      console.log("The width to use is " + w + "px.");
+                      console.log("The height to use is " + h + "px.");
+                      canvas.width =  w;
+                      canvas.height = h;
                       createvideo();
                     };
                     img.src = reader.result;
