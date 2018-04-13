@@ -156,7 +156,7 @@ function convertTowebp(otherformatDataurl,w,h){
 		var size;
 
 		encoder.WebPEncodeConfig(config);				
-		size = encoder.WebPEncodeRGBA(otherformatDataurl, w, h, w * 4, Number(75), out);
+		size = encoder.WebPEncodeRGBA(otherformatDataurl, w, h, w * 4, Number(100), out);
 		console.log("webp generated");
 		var webpimgage =  'data:image/webp;base64,' + base64.encode(out.output);
 		console.log("base64 gnerated");
