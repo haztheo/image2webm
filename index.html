@@ -1,261 +1,99 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf8">
-<!--        <script type="text/javascript" src="libwebp-0.1.3.min.js"></script>-->
-        <style>
-            body {text-align: center;}
-            ul {list-style:none;}
-            #drag { border: 10px solid black; text-align: center; padding:20px; width: 500px; margin: auto; display: inline-block;}
-            #einput {width:400px;}
-            #output {margin:20px;}
+<head>
+<style>
+     body {text-align: center;}
+    ul {list-style:none;}
+    #einput {width:400px;}
+    #output {margin:20px;}
+    
+    #title{
+        font-family: sans-serif;
+        position: absolute;
+        margin-top: 25px;
+        font-weight: bold;
+        left: 0px;
+        width: 100%;
+    }
 
-            #filesinput {
-                visibility: collapse;
-                width: 0px;
-            }
-            #output img{
-                border: 5px solid #333;
-                margin-right: 2px;
-            }
-            #small label {font-size:14px;}
-            #small div {margin:5px 0;}
-            #awesome {display: none}
-            
-            
-            @keyframes donut-spin {
-              0% {
-                transform: rotate(0deg);
-              }
-              100% {
-                transform: rotate(360deg);
-              }
-            }
-            #donut {
-              display: none;
-              border: 4px solid rgba(0, 0, 0, 0.1);
-              border-left-color: #7983ff;
-              border-radius: 50%;
-              width: 30px;
-              height: 30px;
-              animation: donut-spin 1.2s linear infinite;
-              margin-top: 50px;
-            }
-
-        </style>
-    </head>
-    <body>
-        <div id="drag">
-            <button id="fbutton">Select Image</button>
-        </div>
-        <input type="file" id="filesinput" accept="image/*">
-        
-        <div style="text-align: center">
-            <div id="donut"></div>
-        </div>
-        
-        <br>
-        <video id="awesome" controls autoplay loop></video>
-        <br>
-
-        <a style="display:none" id="download" download="video.webm">Download WebM</a>
-
-        <canvas id="canvas" style="display:none"></canvas>
+    #filesinput {
+        visibility: collapse;
+        width: 0px;
+    }
+    div#drag {
+        top: 110px;
+        position: relative;
+    }
+    #output img{
+        border: 5px solid #333;
+        margin-right: 2px;
+    }
+    #small label {font-size:14px;}
+    #small div {margin:5px 0;}
+    #awesome {display: none}
+    
+    a#download {
+        position: relative;
+        top: 150px;
+    }
+    
+    .fbutton{
+        border: none;
+        background-color: #0bff4d;
+        box-shadow: 0px 3px 15px #00000038;
+        color:white;
+        outline:none;
+        border-radius: 5px;
+        width: 150px;
+        font-size: 18px;
+        height: 50px;
+        line-height: 50px;
+        cursor:pointer;
+    }
 
 
-
-<script src="whammy.js"></script>
+    @keyframes donut-spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    #donut {
+      display: none;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: #7983ff;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: donut-spin 1.2s linear infinite;
+      margin-top: 50px;
+    }
+</style>
 <script>
 
-            /* Drag'n drop stuff */
-            var drag = document.getElementById("drag");
-            var fbutton = document.getElementById("fbutton");
-            var files = document.getElementById("filesinput");
-
-            var ctx = 0;
-
-            var canvas = document.getElementById("canvas");
-            var context = canvas.getContext("2d");
-
-            //image to video via Whammy
-            var video = new Whammy.Video();
-
-            var filesarr = [];
     
-            function readURL(input) {
-                if (input.files && input.files[0]) {
-                  var reader = new FileReader();
-                  reader.onload = function (e) {
-                    var img = new Image;
-                    img.onload = function() {
-                      var w = img.width;
-                      var h = img.height;
-                      console.log("The width of the image is " + w + "px.");
-                      console.log("The height of the image is " + h + "px.");
-                      var isPortrait = h > w;
-                      if(isPortrait){
-                        if(h > 1280){
-                            var mult = 1280/h;
-                            console.log("mult : ", mult);
-                            w = Math.floor(mult*w);
-                            h = 1280;
-                        } 
-                      }
-                      else{
-                        if(w > 1280){
-                            var mult = 1280/w;
-                            console.log("mult : ", mult);
-                            h = Math.floor(h * mult);
-                            w = 1280;
-                        }   
-                      }
-                      console.log("The width to use is " + w + "px.");
-                      console.log("The height to use is " + h + "px.");
-                      canvas.width =  w;
-                      canvas.height = h;
-                      createvideo();
-                    };
-                    img.src = reader.result;
-                  };
-                  reader.readAsDataURL(input.files[0]);
-                }
-            }
-
-            function createvideo() {
-                document.getElementById('awesome').src = "";
-                ctx = 0;
-
-                //if we have images loaded
-                if(filesarr.length>0){
-
-                    //loop through them and process
-                    for(i=0; i<filesarr.length; i++) {
-                        var file = filesarr[i];
-                        if(file.type.match(/image.*/)){
-                            process(file);
-                        }
-                    }
-
-                } else {
-                    document.getElementById('status').innerHTML = "Please select some images.";
-                }
-
-            };
-
-
-            fbutton.addEventListener("click", function() {
-                document.getElementById('filesinput').click();
-            }, false);
-
-            drag.ondragover = function(e) {e.preventDefault()}
-            drag.ondrop = function(e) {
-                e.preventDefault();
-                filesarr = e.dataTransfer.items;
-            }
-
-            //process files VIA INPUT
-            files.addEventListener("change", function (e) {
-                filesarr = e.target.files;
-                document.getElementById('donut').style.display = "inline-block";
-                readURL(e.target);
-            }, false);
-
-
-
-            /* main process function */
-            function process(file) {
-
-                var reader = new FileReader();
-                reader.onload = function(event) {
-                    var dataUri = event.target.result;
-                    var img = new Image();
-                 
-                    //load image and drop into canvas
-                    img.onload = function() {
-                        
-                        context.globalAlpha = 1;
-                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        video.add(context, 1000);
-                        video.add(context, 1000);
-                        video.add(context, 1000);
-
-//                        //a custom fade in and out slideshow
-//                        context.globalAlpha = 0.2;
-//                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
-//                        video.add(context);
-//                        context.clearRect(0,0,context.canvas.width,context.canvas.height);
-//                        context.globalAlpha = 0.4;
-//                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
-//                        video.add(context);
-//                        context.clearRect(0,0,context.canvas.width,context.canvas.height);
-//                        context.globalAlpha = 0.6;
-//                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
-//                        video.add(context);
-//                        context.clearRect(0,0,context.canvas.width,context.canvas.height);
-//                        context.globalAlpha = 0.8;
-//                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
-//                        video.add(context);                       
-//                        context.clearRect(0,0,context.canvas.width,context.canvas.height);
-//                        context.globalAlpha = 1;
-//                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
-//
-//                        //this should be a loop based on some user input
-//                        video.add(context);
-//                        video.add(context);
-//                        video.add(context);
-//                        video.add(context);
-//                        video.add(context);
-//                        video.add(context);
-//                        video.add(context);
-//
-//                        context.clearRect(0,0,context.canvas.width,context.canvas.height);
-//                        context.globalAlpha = 0.8;
-//                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
-//                        video.add(context);
-//                        context.clearRect(0,0,context.canvas.width,context.canvas.height);
-//                        context.globalAlpha = 0.6;
-//                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
-//                        video.add(context);
-//                        context.clearRect(0,0,context.canvas.width,context.canvas.height);
-//                        context.globalAlpha = 0.4;
-//                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
-//                        video.add(context);
-                              
-                        ctx++;
-                        finalizeVideo();
-
-                    };
-                    img.src = dataUri;
-                };
-
-                reader.onerror = function(event) {
-                    console.error("File could not be read! Code " + event.target.error.code);
-                };
-
-                reader.readAsDataURL(file);
-
-            }      
-
-
-function finalizeVideo(){
-  //check if its ready
-  if(ctx==filesarr.length){
-      var start_time = +new Date;
-      video.compile(undefined, function(output){
-        console.log("output : ", output);
-        var url = URL.createObjectURL(output);
-        document.getElementById('download').href = url;
-        document.getElementById('donut').style.display = "none";
-        document.getElementById('awesome').style.display = "block";
-        document.getElementById('awesome').src = url;
-        document.getElementById('download').style.display = '';
-      });
-      var end_time = +new Date;
-  }
-
-}
-
-
 </script>
+</head>
+<body>
+<span id="title">IMAGES 2 VIDEO -- CROSS BROWSER</span>
+<div id="drag">
+    <button id="fbutton" class="fbutton">Choose Image</button>
+</div>
+<input type="file" id="filesinput" accept="image/*">
+
+<div style="text-align: center">
+    <div id="donut"></div>
+</div>    
+
+<canvas id="canvas" width="150" height="150" style="display:none"></canvas>
+<video id="awesome" width="150" height="150" controls autoplay loop></video>
+<a style="display:none" id="download" download="clock.webm">
+    <button class="fbutton" style="background-color: #0b98ff;">Download Video</button>
+</a>
+<script src="whammy_common.js" type="text/javascript"></script>
+<script src="whammy_cross.js" type="text/javascript"></script>
+<script src="app.js" type="text/javascript"></script>
 </body>
 </html>
