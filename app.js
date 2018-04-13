@@ -58,18 +58,35 @@ function returnHeightWidth(img, callback){
 }
 
 /* whammy stuff */
+var compress_stuff = false;
+function toggleCompression(){
+    compress_stuff = !compress_stuff;
+}
 function grabImageVideo(url, callback){
     var img = new Image();
     img.onload = function() {
         returnHeightWidth(img, function(w,h){
+            img.width = w;
+            img.height = h;
             var canvas = document.getElementById('canvas');
             canvas.width =  w;
             canvas.height = h;
             var context = canvas.getContext('2d');
             context.globalAlpha = 1;
             context.drawImage(img, 0, 0, canvas.width, canvas.height);
-            callback(context, canvas.width, canvas.height);
-        })
+            if(compress_stuff){
+                var newImageData = canvas.toDataURL("image/jpeg", 10/100);
+                var result_image_obj = new Image();
+                result_image_obj.onload = function() {
+                    context.drawImage(result_image_obj, 0, 0, canvas.width, canvas.height);
+                    callback(context, canvas);
+                }
+                result_image_obj.src = newImageData; 
+            }
+            else{
+                callback(context, canvas);
+            }
+        })   
     }
     img.src = url;
 }
@@ -80,15 +97,18 @@ var framerate = 1;
 var frames = [];
 var webpUrlRegex = /^data:image\/webp;base64,/ig;
 var isChrome = webpUrlRegex.test(document.createElement('canvas').toDataURL('image/webp'));
+
 function grabFrame(url, callback){
-	grabImageVideo(url, function(ctxz, width, height){
+	grabImageVideo(url, function(ctxz, canvas){
         var vid = isChrome ? whammy_ : whammy_cross;
+        var width = canvas.width;
+        var height = canvas.height;
         if(!isChrome){
             vid.setFrameRate(framerate);
             var imagesdata = ctxz.getImageData(0,0,width,height).data;
             vid.addFrame(imagesdata,width,height);
-            vid.addFrame(imagesdata,width,height);
-            vid.addFrame(imagesdata,width,height);
+//            vid.addFrame(imagesdata,width,height);
+//            vid.addFrame(imagesdata,width,height);
         }
         else{
             vid.add(ctxz,1000);

@@ -160,6 +160,7 @@ var Whammy;
 			for(var x =0; x < self.workers_lenght; ++x){
 				this.workers.push(new Worker('WhammyWorker.js'));
 				this.workers[x].addEventListener('message', function(e) {
+                    console.log("message : ", e);
 					++self.retrival;
 					self.onConvert && self.onConvert(++self.counterval);
 					self.frames[e.data.frame] = e.data.webp;

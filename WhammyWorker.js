@@ -21,6 +21,7 @@
 	var TABLE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	var REGEX_SPACE_CHARACTERS = /[\t\n\f\r ]/g;
 	var decode = function(input) {
+        console.log("decode : ", input);
 		input = String(input)
 			.replace(REGEX_SPACE_CHARACTERS, '');
 		var length = input.length;
@@ -132,10 +133,11 @@
 
 
 function convertTowebp(otherformatDataurl,w,h){
+        console.warn("convertTowebp");
 		var config = new Object();
 		config.target_size = 0;
 		config.target_PSNR = 0;
-		config.method = 3; // quality/speed trade-off (0=fast, 6=slower-better)
+		config.method = 1; // quality/speed trade-off (0=fast, 6=slower-better)
 		config.sns_strength = 50;
 		config.filter_strength = 20;
 		config.filter_sharpness = 0;
@@ -161,13 +163,26 @@ function convertTowebp(otherformatDataurl,w,h){
 		return webpimgage;
 	 }
 
+var wepimageurl = null;
 
 self.addEventListener('message', function(e) {
-	var wepimageurl = convertTowebp(e.data.imagedata,e.data.width,e.data.height);
+    if(wepimageurl == null){
+        wepimageurl = convertTowebp(e.data.imagedata,e.data.width,e.data.height)
+    }
   	self.postMessage(
 	{
 		webp : wepimageurl,
 		frame : e.data.frame
+	});
+    self.postMessage(
+	{
+		webp : wepimageurl,
+		frame : e.data.frame + 1
+	});
+    self.postMessage(
+	{
+		webp : wepimageurl,
+		frame : e.data.frame + 2
 	});
 }, false);
 
