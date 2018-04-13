@@ -169,21 +169,15 @@ self.addEventListener('message', function(e) {
     if(wepimageurl == null){
         wepimageurl = convertTowebp(e.data.imagedata,e.data.width,e.data.height)
     }
-  	self.postMessage(
-	{
-		webp : wepimageurl,
-		frame : e.data.frame
-	});
-    self.postMessage(
-	{
-		webp : wepimageurl,
-		frame : e.data.frame + 1
-	});
-    self.postMessage(
-	{
-		webp : wepimageurl,
-		frame : e.data.frame + 2
-	});
+    var repeat = e.data.repeatNumber;
+    console.log("repeat number : ", e.data.repeatNumber);
+    for (i = 0; i < repeat; i++) { 
+        self.postMessage(
+        {
+            webp : wepimageurl,
+            frame : e.data.frame + i
+        });
+    }
 }, false);
 
 

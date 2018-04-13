@@ -179,7 +179,7 @@ var Whammy;
 			this.interaval = null;
 		}
 
-		WhammyCrs.prototype.addFrame = function(imagedata,width,height){
+		WhammyCrs.prototype.addFrame = function(imagedata,width,height, repeatNumber){
 			var self = this;
 			--this.retrival;
 			var worker = self.workers[self.rotation];
@@ -187,7 +187,8 @@ var Whammy;
 				imagedata : imagedata,
 				width : width,
 				height : height,
-				frame: self.framenumber
+				frame: self.framenumber,
+                repeatNumber: repeatNumber
 			});
 			++self.rotation;
 			++self.framenumber;

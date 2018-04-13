@@ -106,9 +106,7 @@ function grabFrame(url, callback){
         if(!isChrome){
             vid.setFrameRate(framerate);
             var imagesdata = ctxz.getImageData(0,0,width,height).data;
-            vid.addFrame(imagesdata,width,height);
-//            vid.addFrame(imagesdata,width,height);
-//            vid.addFrame(imagesdata,width,height);
+            vid.addFrame(imagesdata,width,height, 3);
         }
         else{
             vid.add(ctxz,1000);
