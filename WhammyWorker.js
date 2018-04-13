@@ -137,7 +137,7 @@ function convertTowebp(otherformatDataurl,w,h){
 		var config = new Object();
 		config.target_size = 0;
 		config.target_PSNR = 0;
-		config.method = 1; // quality/speed trade-off (0=fast, 6=slower-better)
+		config.method = 0; // quality/speed trade-off (0=fast, 6=slower-better)
 		config.sns_strength = 50;
 		config.filter_strength = 20;
 		config.filter_sharpness = 0;
