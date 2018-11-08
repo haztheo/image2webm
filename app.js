@@ -72,6 +72,8 @@ function grabImageVideo(url, callback){
             canvas.width =  w;
             canvas.height = h;
             var context = canvas.getContext('2d');
+            context.fillStyle = "black";
+            context.fillRect(0, 0, canvas.width, canvas.height);
             context.globalAlpha = 1;
             context.drawImage(img, 0, 0, canvas.width, canvas.height);
             if(compress_stuff){
