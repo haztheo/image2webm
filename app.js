@@ -37,10 +37,6 @@ function readURL(input) {
 function returnHeightWidth(img, callback){
     var w = img.width;
     var h = img.height;
-    if(isChrome){
-        callback(w,h);
-        return;
-    }
     console.log("The width of the image is " + w + "px.");
     console.log("The height of the image is " + h + "px.");
     var isPortrait = h > w;
@@ -81,9 +77,7 @@ function grabImageVideo(url, callback){
             context.globalAlpha = 1;
             context.drawImage(img, 0, 0, canvas.width, canvas.height);
             if(compress_stuff){
-                var quality = isChrome? 100/100 : 10/100;
-                console.log("quality : ", quality);
-                var newImageData = canvas.toDataURL("image/jpeg", quality);
+                var newImageData = canvas.toDataURL("image/jpeg", 10/100);
                 var result_image_obj = new Image();
                 result_image_obj.onload = function() {
                     context.drawImage(result_image_obj, 0, 0, canvas.width, canvas.height);
@@ -127,7 +121,6 @@ function grabFrame(url, callback){
 };
 
 function makeVideo(url){
-    console.log("is chrome: ", isChrome)
     if(isChrome){
         whammy_ = new Whammy.Video();
     }
