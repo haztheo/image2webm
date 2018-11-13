@@ -82,6 +82,7 @@ function grabImageVideo(url, callback){
             context.drawImage(img, 0, 0, canvas.width, canvas.height);
             if(compress_stuff){
                 var quality = isChrome? 100/100 : 10/100;
+                console.log("quality : ", quality);
                 var newImageData = canvas.toDataURL("image/jpeg", quality);
                 var result_image_obj = new Image();
                 result_image_obj.onload = function() {
