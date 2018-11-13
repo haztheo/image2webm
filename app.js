@@ -37,6 +37,10 @@ function readURL(input) {
 function returnHeightWidth(img, callback){
     var w = img.width;
     var h = img.height;
+    if(isChrome){
+        callback(w,h);
+        return;
+    }
     console.log("The width of the image is " + w + "px.");
     console.log("The height of the image is " + h + "px.");
     var isPortrait = h > w;
